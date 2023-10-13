@@ -12,6 +12,7 @@ router.post('/subir-archivo', documentosController.subirArchivo);
 router.get('/listado', documentosController.listarDocumentos);
 // Obtener un tipo de documento por su ID
 router.get('/:id', documentosController.getDocumentoById);
+router.get('/reporte/:id', documentosController.getDocumentoByIdReporte);
 
 // Actualizar un tipo de documento existente
 router.put('/:id', documentosController.updateDocumento);

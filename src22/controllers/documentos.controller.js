@@ -50,7 +50,7 @@ const subirArchivo = async (req, res) => {
          elaborado_por, revisado_por, aprobado_por, 
          fecha_vigencia, fecha_elaboracion, fecha_revision, fecha_aprobacion, fecha_proxima_revision,
          modelo_documento,numero_revision,
-         usuario_id } = req.body;
+         usuario_id, norma_id } = req.body;
 
       const rutaDocumento = path.join('uploads', nombreDocumento);
       const fecha_registro = new Date();
@@ -59,8 +59,8 @@ const subirArchivo = async (req, res) => {
         INSERT INTO documentos 
         (organigrama_id, tipo_documento_id, estatus_id, nombre_documento,descripcion_documento, codigo_documento, 
           elaborado_por, revisado_por, aprobado_por, fecha_vigencia, fecha_elaboracion, fecha_revision, fecha_aprobacion, fecha_proxima_revision, modelo_documento,numero_revision,    
-        ruta_documento, usuario_id, fecha_registro) 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19 )
+        ruta_documento, usuario_id, norma_id, fecha_registro) 
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20 )
         RETURNING id
       `;
 
@@ -84,6 +84,7 @@ const subirArchivo = async (req, res) => {
           numero_revision || null,
           rutaDocumento || null,
           usuario_id || null,
+          norma_id || null,
           fecha_registro,
         ]);
 
@@ -215,7 +216,7 @@ const listarDocumentos = async (req, res) => {
       SELECT documentos.id, organigrama.descripcion, nombre_estatus, tipo_documento, nombre_documento, codigo_documento,  descripcion_documento, 
       elaborado_por, revisado_por, aprobado_por, fecha_vigencia, fecha_elaboracion, fecha_revision, fecha_aprobacion, fecha_proxima_revision, 
       modelo_documento,numero_revision,
-      documentos.fecha_registro 
+      documentos.fecha_registro, organigrama.descripcion, organigrama.codigo
       FROM documentos
       LEFT JOIN organigrama ON organigrama_id = organigrama.id
       LEFT JOIN estatus ON estatus_id = estatus.id
@@ -240,7 +241,9 @@ const listarDocumentos = async (req, res) => {
 
 const getDocumentoById = async (req, res) => {
   const { id } = req.params;
-  const sql = 'SELECT * FROM public.documentos WHERE id = $1';
+  const sql = `SELECT * 
+  FROM public.documentos 
+  WHERE id = $1`;
 
   try {
     const { rows } = await db.query(sql, [id]);
@@ -255,6 +258,32 @@ const getDocumentoById = async (req, res) => {
   }
 };
 
+
+const getDocumentoByIdReporte = async (req, res) => {
+  const { id } = req.params;
+  const sql = `SELECT documentos.id, organigrama.descripcion, nombre_estatus, tipo_documento, nombre_documento, codigo_documento,  descripcion_documento, 
+  elaborado_por, revisado_por, aprobado_por, fecha_vigencia, fecha_elaboracion, fecha_revision, fecha_aprobacion, fecha_proxima_revision, 
+  modelo_documento,numero_revision, 
+  documentos.fecha_registro, organigrama.descripcion, organigrama.codigo, nombre_normas
+  FROM documentos
+  LEFT JOIN organigrama ON organigrama_id = organigrama.id
+  LEFT JOIN normas ON norma_id = normas.id
+  LEFT JOIN estatus ON estatus_id = estatus.id
+  LEFT JOIN tipo_documentos ON tipo_documento_id = tipo_documentos.id
+  WHERE documentos.id = $1`;
+
+  try {
+    const { rows } = await db.query(sql, [id]);
+    if (rows.length === 0) {
+      res.status(404).json({ message: 'Documento no encontrado.' });
+    } else {
+      res.json(rows[0]);
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al obtener el Documento por ID.' });
+  }
+};
 
 // Actualizar un  documento existente
 const updateDocumento = async (req, res) => {
@@ -275,4 +304,4 @@ const updateDocumento = async (req, res) => {
   }
 };
 
-module.exports = { subirArchivo, listarDocumentos, updateDocumento, getDocumentoById, actualizarDocumento  };
+module.exports = { subirArchivo, listarDocumentos, updateDocumento, getDocumentoById, actualizarDocumento, getDocumentoByIdReporte  };

@@ -17,6 +17,7 @@ import TipoDocumentosRoutes  from "./routes/tipo_documentos.routes";
 import DocumentosPublicosRoutes  from "./routes/documentos_publicos.route";
 import movimientosRoutes   from "./routes/movimientos.route";
 import EmisoresRoutes  from "./routes/emisor.route";
+import NormasRoutes  from "./routes/normas.route";
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.use("/api/tipodocumentos", TipoDocumentosRoutes);
 app.use("/api/documentos/publicos", DocumentosPublicosRoutes);
 app.use("/api/movimientos", movimientosRoutes);
 app.use("/api/emisores", EmisoresRoutes);
+app.use("/api/normas", NormasRoutes);
 
 
 
