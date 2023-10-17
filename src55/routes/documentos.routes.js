@@ -10,9 +10,18 @@ const router = Router();
 
 router.post('/subir-archivo', documentosController.subirArchivo);
 router.get('/listado', documentosController.listarDocumentos);
+router.get('/reportes/general', documentosController.getDocumentoReporteGeneral);
 // Obtener un tipo de documento por su ID
 router.get('/:id', documentosController.getDocumentoById);
 router.get('/reporte/:id', documentosController.getDocumentoByIdReporte);
+router.get('/reporte/organigrama/:id', documentosController.getDocumentoByIdReporteOrganigrama);
+
+
+
+
+
+
+
 
 // Actualizar un tipo de documento existente
 router.put('/:id', documentosController.updateDocumento);
