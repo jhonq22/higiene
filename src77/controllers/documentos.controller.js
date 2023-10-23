@@ -50,7 +50,7 @@ const subirArchivo = async (req, res) => {
          elaborado_por, revisado_por, aprobado_por, 
          fecha_vigencia, fecha_elaboracion, fecha_revision, fecha_aprobacion, fecha_proxima_revision,
          modelo_documento,numero_revision,
-         usuario_id, norma_id } = req.body;
+         usuario_id, datos_normas  } = req.body;
 
       const rutaDocumento = path.join('uploads', nombreDocumento);
       const fecha_registro = new Date();
@@ -59,7 +59,7 @@ const subirArchivo = async (req, res) => {
         INSERT INTO documentos 
         (organigrama_id, tipo_documento_id, estatus_id, nombre_documento,descripcion_documento, codigo_documento, 
           elaborado_por, revisado_por, aprobado_por, fecha_vigencia, fecha_elaboracion, fecha_revision, fecha_aprobacion, fecha_proxima_revision, modelo_documento,numero_revision,    
-        ruta_documento, usuario_id, norma_id, fecha_registro) 
+        ruta_documento, usuario_id, datos_normas , fecha_registro) 
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20 )
         RETURNING id
       `;
@@ -84,7 +84,7 @@ const subirArchivo = async (req, res) => {
           numero_revision || null,
           rutaDocumento || null,
           usuario_id || null,
-          norma_id || null,
+          datos_normas  || null,
           fecha_registro,
         ]);
 
@@ -102,101 +102,89 @@ const subirArchivo = async (req, res) => {
 
 
 
-const actualizarDocumento = async (req, res) => {
+const actualizarArchivo = async (req, res) => {
   try {
-    const {
-      id, // Agrega el campo "id" para identificar el registro existente (si se proporciona)
-      organigrama_id, tipo_documento_id, estatus_id, nombre_documento,
-      descripcion_documento, codigo_documento,
-      elaborado_por, revisado_por, aprobado_por,
-      fecha_vigencia, fecha_elaboracion, fecha_revision, fecha_aprobacion, fecha_proxima_revision,
-      modelo_documento, numero_revision,
-      usuario_id,
-    } = req.body;
-
-    const archivo = req.file;
-    if (!archivo) {
-      console.error('No se ha proporcionado un archivo válido');
-      return res.status(400).json({ error: 'No se ha proporcionado un archivo válido' });
-    }
-
-    const nombreDocumentoNuevo = archivo.originalname.replace(/ /g, '_');
-    const rutaDocumentoNuevo = path.join('uploads', nombreDocumentoNuevo);
-    const fecha_registro = new Date();
-
-    // Consulta la base de datos para obtener la ruta del archivo actual si se proporciona un "id"
-    let archivoActual;
-    if (id) {
-      const consultaArchivoQuery = 'SELECT ruta_documento FROM documentos WHERE id = $1';
-      const consultaArchivoResult = await pool.query(consultaArchivoQuery, [id]);
-      archivoActual = consultaArchivoResult.rows[0].ruta_documento;
-    }
-
-    try {
-      await pool.query('BEGIN'); // Comienza una transacción
-
-      // Borra el archivo anterior si existe y se proporciona un "id"
-      if (archivoActual && fs.existsSync(archivoActual)) {
-        fs.unlinkSync(archivoActual);
+    upload(req, res, async (err) => {
+      if (err) {
+        console.error('Error al subir el archivo:', err);
+        return res.status(400).json({ error: 'Error al subir el archivo' });
       }
 
-      // Actualiza el registro en la base de datos
-      await pool.query(`
-        UPDATE documentos
+      const archivo = req.file;
+      if (!archivo) {
+        console.error('No se ha proporcionado un archivo válido');
+        return res.status(400).json({ error: 'No se ha proporcionado un archivo válido' });
+      }
+
+      const nombreDocumento = archivo.originalname.replace(/ /g, '_');
+      const { organigrama_id, tipo_documento_id, estatus_id, descripcion_documento, elaborado_por, revisado_por, aprobado_por, fecha_vigencia, fecha_elaboracion, fecha_revision, fecha_aprobacion, fecha_proxima_revision, modelo_documento, numero_revision, usuario_id, datos_normas  } = req.body;
+      
+      const rutaDocumento = path.join('uploads', nombreDocumento);
+      const fecha_registro = new Date();
+      const documento_id = req.params.id; // Suponiendo que tienes el ID del documento a actualizar en los parámetros de la ruta.
+
+      const updateQuery = `
+        UPDATE documentos 
         SET
-         
-          estatus_id = $2,
-          nombre_documento = $3,
-          descripcion_documento = $4,
-          elaborado_por = $5,
-          revisado_por = $6,
-          aprobado_por = $7,
-          fecha_vigencia = $8,
-          fecha_elaboracion = $9,
-          fecha_revision = $10,
-          fecha_aprobacion = $11,
-          fecha_proxima_revision = $12,
-          modelo_documento = $13,
-          numero_revision = $14,
-          ruta_documento = $15,
-          usuario_id = $16,
+       
+          estatus_id = $1,
+          nombre_documento = $2,
+          descripcion_documento = $3,
+          elaborado_por = $4,
+          revisado_por = $5,
+          aprobado_por = $6,
+          fecha_vigencia = $7,
+          fecha_elaboracion = $8,
+          fecha_revision = $9,
+          fecha_aprobacion = $10,
+          fecha_proxima_revision = $11,
+          modelo_documento = $12,
+          numero_revision = $13,
+          ruta_documento = $14,
+          usuario_id = $15,
+          datos_normas  = $16,
           fecha_registro = $17
-        WHERE id = $1
-      `, [
-        id,
-        estatus_id || null,
-        nombreDocumentoNuevo || null,
-        descripcion_documento || null,
-        elaborado_por || null,
-        revisado_por || null,
-        aprobado_por || null,
-        fecha_vigencia || null,
-        fecha_elaboracion || null,
-        fecha_revision || null,
-        fecha_aprobacion || null,
-        fecha_proxima_revision || null,
-        modelo_documento || null,
-        numero_revision || null,
-        rutaDocumentoNuevo || null,
-        usuario_id || null,
-        fecha_registro,
-      ]);
+        WHERE id = $18
+        RETURNING id
+      `;
+//ACTUALIZAR
+      try {
+        const result = await pool.query(updateQuery, [
+        
+          estatus_id,
+          nombreDocumento,
+          descripcion_documento,
+          elaborado_por,
+          revisado_por,
+          aprobado_por,
+          fecha_vigencia,
+          fecha_elaboracion,
+          fecha_revision,
+          fecha_aprobacion,
+          fecha_proxima_revision,
+          modelo_documento,
+          numero_revision,
+          rutaDocumento,
+          usuario_id,
+          datos_normas ,
+          fecha_registro,
+          documento_id
+        ]);
 
-      await pool.query('COMMIT'); // Confirma la transacción
-
-      res.status(200).json({ mensaje: 'Documento actualizado correctamente' });
-    } catch (error) {
-      await pool.query('ROLLBACK'); // Revierte la transacción en caso de error
-      console.error('Error al actualizar en la base de datos:', error);
-      return res.status(500).json({ error: 'Error al actualizar en la base de datos' });
-    } finally {
-      await pool.query('END'); // Finaliza la transacción
-    }
+        res.status(200).json({ mensaje: 'Archivo actualizado y registro actualizado correctamente', documento: result.rows[0] });
+      } catch (error) {
+        console.error('Error al actualizar en la base de datos:', error);
+        return res.status(500).json({ error: 'Error al actualizar en la base de datos' });
+      }
+    });
   } catch (error) {
-    console.error('Error al actualizar el documento:', error);
-    return res.status(500).json({ error: 'Error al actualizar el documento' });
+    console.error('Error en la actualización del archivo:', error);
+    return res.status(500).json({ error: 'Error en la actualización del archivo' });
   }
 };
+
+
+
 
 
 
@@ -265,10 +253,9 @@ const getDocumentoReporteGeneral = async (req, res) => {
   db.query(`SELECT documentos.id, organigrama.descripcion, nombre_estatus, tipo_documento, nombre_documento, codigo_documento,  descripcion_documento, 
   elaborado_por, revisado_por, aprobado_por, fecha_vigencia, fecha_elaboracion, fecha_revision, fecha_aprobacion, fecha_proxima_revision, 
   modelo_documento,numero_revision, 
-  documentos.fecha_registro, organigrama.descripcion, organigrama.codigo, nombre_normas
+  documentos.fecha_registro, organigrama.descripcion, organigrama.codigo, datos_normas 
   FROM documentos
   LEFT JOIN organigrama ON organigrama_id = organigrama.id
-  LEFT JOIN normas ON norma_id = normas.id
   LEFT JOIN estatus ON estatus_id = estatus.id
   LEFT JOIN tipo_documentos ON tipo_documento_id = tipo_documentos.id`, (err, results) => {
     if (err) {
@@ -285,10 +272,9 @@ const getDocumentoByIdReporte = async (req, res) => {
   const sql = `SELECT documentos.id, organigrama.descripcion, nombre_estatus, tipo_documento, nombre_documento, codigo_documento,  descripcion_documento, 
   elaborado_por, revisado_por, aprobado_por, fecha_vigencia, fecha_elaboracion, fecha_revision, fecha_aprobacion, fecha_proxima_revision, 
   modelo_documento,numero_revision, 
-  documentos.fecha_registro, organigrama.descripcion, organigrama.codigo, nombre_normas
+  documentos.fecha_registro, organigrama.descripcion, organigrama.codigo, datos_normas 
   FROM documentos
   LEFT JOIN organigrama ON organigrama_id = organigrama.id
-  LEFT JOIN normas ON norma_id = normas.id
   LEFT JOIN estatus ON estatus_id = estatus.id
   LEFT JOIN tipo_documentos ON tipo_documento_id = tipo_documentos.id
   WHERE documentos.id = $1`;
@@ -314,10 +300,9 @@ const getDocumentoByIdReporteOrganigrama = async (req, res) => {
     SELECT documentos.id, organigrama.descripcion, nombre_estatus, tipo_documento, nombre_documento, codigo_documento, descripcion_documento, 
     elaborado_por, revisado_por, aprobado_por, fecha_vigencia, fecha_elaboracion, fecha_revision, fecha_aprobacion, fecha_proxima_revision, 
     modelo_documento, numero_revision, 
-    documentos.fecha_registro, organigrama.descripcion, organigrama.codigo, nombre_normas
+    documentos.fecha_registro, organigrama.descripcion, organigrama.codigo, datos_normas 
     FROM documentos
     LEFT JOIN organigrama ON organigrama_id = organigrama.id
-    LEFT JOIN normas ON norma_id = normas.id
     LEFT JOIN estatus ON estatus_id = estatus.id
     LEFT JOIN tipo_documentos ON tipo_documento_id = tipo_documentos.id
     WHERE organigrama_id = $1`, [id], (err, results) => {
@@ -349,5 +334,5 @@ const updateDocumento = async (req, res) => {
   }
 };
 
-module.exports = { subirArchivo, listarDocumentos, updateDocumento, getDocumentoReporteGeneral, getDocumentoById, actualizarDocumento, getDocumentoByIdReporte, 
+module.exports = { subirArchivo, listarDocumentos, updateDocumento, getDocumentoReporteGeneral, getDocumentoById, actualizarArchivo, getDocumentoByIdReporte, 
   getDocumentoByIdReporteOrganigrama  };

@@ -35,9 +35,12 @@ router.get('/archivos/:nombreArchivo', (req, res) => {
   });
 
 
-  router.put('/actualizar-archivo/:id', upload.single('archivo'), documentosController.actualizarDocumento);
+
 
   // Actualizar un tipo de documento existente
+
+  router.put('/actualizar-archivo/:id', documentosController.actualizarArchivo);
+
 
 
 // ... Otras rutas ...

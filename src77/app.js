@@ -1,5 +1,6 @@
 import express from "express";
 import morgan from "morgan";
+const session = require('express-session');
 const bodyParser = require('body-parser');
 const cors = require('cors'); // Importa el paquete cors
 
@@ -11,6 +12,7 @@ const port = process.env.PORT || 4000;
 
 import EstatusRoutes from "./routes/estatus.routes";
 import AuthRoutes  from "./routes/auth.routes";
+import UserRoutes  from "./routes/user.routes";
 import DocumentosRoutes  from "./routes/documentos.routes";
 import OrganigramaRoutes  from "./routes/organigrama.route";
 import TipoDocumentosRoutes  from "./routes/tipo_documentos.routes";
@@ -23,10 +25,12 @@ const app = express();
 
 // Configura CORS
 app.use(cors({
-    //origin: 'http://localhost:5173', // Cambia esto al dominio de tu aplicación Vue.js
-    origin: 'http://172.16.0.65',
+   origin: 'http://localhost:5173', // Cambia esto al dominio de tu aplicación Vue.js
+     //origin: 'http://172.16.0.65',
     optionsSuccessStatus: 200, // Algunas versiones de CORS pueden requerir esto
   }));
+
+
 
 // Settings
 app.set("port", port);
@@ -35,6 +39,11 @@ app.set("port", port);
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(bodyParser.json());
+app.use(session({
+  secret: 'hola', // Cambia esto a un valor seguro
+  resave: false,
+  saveUninitialized: true
+}));
 
 // Configurar middleware para servir archivos estáticos desde la carpeta 'uploads'
 app.use('/uploads', express.static('uploads'));
@@ -45,6 +54,7 @@ app.use('/uploads', express.static('uploads'));
 
 app.use("/api/estatus", EstatusRoutes);
 app.use('/auth', AuthRoutes);
+app.use('/user', UserRoutes);
 app.use("/api/documentos", DocumentosRoutes);
 app.use("/api/organigrama", OrganigramaRoutes);
 app.use("/api/tipodocumentos", TipoDocumentosRoutes);
