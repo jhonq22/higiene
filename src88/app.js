@@ -25,8 +25,8 @@ const app = express();
 
 // Configura CORS
 app.use(cors({
-   origin: 'http://localhost:5173', // Cambia esto al dominio de tu aplicación Vue.js
-     //origin: 'http://172.16.0.65',
+   //origin: 'http://localhost:5173', // Cambia esto al dominio de tu aplicación Vue.js
+     origin: 'http://172.16.0.65',
     optionsSuccessStatus: 200, // Algunas versiones de CORS pueden requerir esto
   }));
 

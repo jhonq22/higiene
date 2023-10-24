@@ -186,6 +186,61 @@ const actualizarArchivo = async (req, res) => {
 
 
 
+// Actualizar un  documento existente
+const updateDocumento = async (req, res) => {
+  const { id } = req.params;
+  const { organigrama_id, tipo_documento_id, estatus_id, descripcion_documento, elaborado_por, revisado_por, aprobado_por, fecha_vigencia, fecha_elaboracion, fecha_revision, fecha_aprobacion, fecha_proxima_revision, modelo_documento, numero_revision, usuario_id, datos_normas  } = req.body;
+  const sql = `
+  UPDATE documentos 
+  SET
+     estatus_id = $1,
+     descripcion_documento = $2,
+    elaborado_por = $3,
+    revisado_por = $4,
+    aprobado_por = $5,
+    fecha_vigencia = $6,
+    fecha_elaboracion = $7,
+    fecha_revision = $8,
+    fecha_aprobacion = $9,
+    fecha_proxima_revision = $10,
+    modelo_documento = $11,
+    numero_revision = $12,
+    usuario_id = $13,
+    datos_normas  = $14
+    WHERE id = $15
+  RETURNING id
+`;
+
+  try {
+    const { rowCount } = await db.query(sql, [
+      estatus_id,
+      descripcion_documento,
+      elaborado_por,
+      revisado_por,
+      aprobado_por,
+      fecha_vigencia,
+      fecha_elaboracion,
+      fecha_revision,
+      fecha_aprobacion,
+      fecha_proxima_revision,
+      modelo_documento,
+      numero_revision,
+      usuario_id,
+      datos_normas ,
+      id
+    
+    ]);
+    if (rowCount === 1) {
+      res.json({ message: 'Estatus Actualizado con éxito.' });
+    } else {
+      res.status(500).json({ message: 'Error al actualizar el documento.' });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al actualizar el documento.' });
+  }
+};
+
 
 
 
@@ -315,24 +370,6 @@ const getDocumentoByIdReporteOrganigrama = async (req, res) => {
 };
 
 
-// Actualizar un  documento existente
-const updateDocumento = async (req, res) => {
-  const { id } = req.params;
-  const { estatus_id } = req.body;
-  const sql = 'UPDATE documentos SET estatus_id = $1 WHERE id = $2';
-
-  try {
-    const { rowCount } = await db.query(sql, [estatus_id,  id]);
-    if (rowCount === 1) {
-      res.json({ message: 'Estatus Actualizado con éxito.' });
-    } else {
-      res.status(500).json({ message: 'Error al actualizar el documento.' });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al actualizar el documento.' });
-  }
-};
 
 module.exports = { subirArchivo, listarDocumentos, updateDocumento, getDocumentoReporteGeneral, getDocumentoById, actualizarArchivo, getDocumentoByIdReporte, 
   getDocumentoByIdReporteOrganigrama  };
