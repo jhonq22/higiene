@@ -30,6 +30,11 @@ app.use(cors({
     optionsSuccessStatus: 200, // Algunas versiones de CORS pueden requerir esto
   }));
 
+  // Configurar el encabezado 'Cache-Control' en todas las respuestas
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+});
 
 
 // Settings
