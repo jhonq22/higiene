@@ -1,0 +1,11 @@
+import { Router } from "express";
+const documentosControladosController = require('../controllers/documentos_controlados.controller');
+const router = Router();
+// Rutas para documentos controlados
+router.post('/', documentosControladosController.createDocumentoControlado);
+router.get('/', documentosControladosController.getAllDocumentosControlados);
+router.put('/:id', documentosControladosController.updateDocumentoControlado); // Ruta para actualizar por ID
+router.get('/:id', documentosControladosController.getDocumentoControladoById); // Ruta para obtener por ID
+// Agrega otras rutas para actualizar y eliminar aquí
+
+module.exports = router;
