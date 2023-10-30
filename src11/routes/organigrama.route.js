@@ -5,6 +5,9 @@ const router = Router();
 
 // Obtener todos los registros
 router.get('/organigrama', organigramaController.getAllOrganigrama);
+
+router.get('/organigrama/padre', organigramaController.getAllOrganigramaPadre);
+
 //obtener un registro
 
 router.get('/organigrama/:id', organigramaController.getOrganigramaById);
@@ -19,6 +22,7 @@ router.put('/organigrama/:id', organigramaController.updateOrganigrama);
 router.delete('/organigrama/:id', organigramaController.deleteOrganigrama);
 
 router.get('/obtener-documentos', organigramaController.getDocumentosOrganigrama);
+
 
 
 

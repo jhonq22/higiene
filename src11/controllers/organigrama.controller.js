@@ -11,6 +11,22 @@ exports.getAllOrganigrama = (req, res) => {
   });
 };
 
+
+// Obtener todos los registros especificos
+exports.getAllOrganigramaPadre = (req, res) => {
+  db.query(`SELECT o.id,  o.codigo, o.descripcion, p.descripcion AS descripcion_padre, o.estado
+            FROM organigrama AS o
+            INNER JOIN organigrama AS p ON o.padre = p.id;
+            `
+  , (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Error al obtener los registros de organigrama.' });
+    }
+    res.json(results.rows);
+  });
+};
+
 // Obtener documentos por organigrama
 exports.getDocumentosOrganigrama = async (req, res) => {
   const organigramaId = req.query.organigrama_id;
@@ -30,6 +46,18 @@ exports.getDocumentosOrganigrama = async (req, res) => {
     res.status(500).json({ error: 'Error al obtener los documentos' });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Crear un nuevo registro
 exports.createOrganigrama = async (req, res) => {

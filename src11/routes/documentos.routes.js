@@ -15,6 +15,8 @@ router.get('/reportes/general', documentosController.getDocumentoReporteGeneral)
 router.get('/:id', documentosController.getDocumentoById);
 router.get('/reporte/:id', documentosController.getDocumentoByIdReporte);
 router.get('/reporte/organigrama/:id', documentosController.getDocumentoByIdReporteOrganigrama);
+router.get('/reporte/organigrama/:id/:datosNormas', documentosController.getDocumentoByIdReporteOrganigramaNormas);
+
 
 
 
