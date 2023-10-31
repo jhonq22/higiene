@@ -8,6 +8,6 @@ router.put('/:id', documentosControladosController.updateDocumentoControlado); /
 router.get('/:id', documentosControladosController.getDocumentoControladoById); // Ruta para obtener por ID
 router.get('/documentos/:id', documentosControladosController.getControladosPorDocumentoId); // Ruta para obtener por ID
 router.get('/reporte/:id', documentosControladosController.getControladosReportesPorDocumentoId); // Ruta para obtener por ID
-// Agrega otras rutas para actualizar y eliminar aquí
+router.delete('/documentos/:id', documentosControladosController.deleteDocumentoControlado);
 
 module.exports = router;

@@ -3,10 +3,14 @@ const db = require('../database/db');
 // Controlador para obtener todos los documentos controlados
 const getAllDocumentosControlados = async (req, res) => {
     try {
-      const query = `SELECT  documentos_controlados.id, documentos.id as id_documento , descripcion_documento, codigo_documento,  organigrama.codigo, organigrama.descripcion
-      FROM  documentos_controlados 
+      const query = `SELECT MAX(documentos_controlados.id) as id,
+      documentos.id as id_documento,
+      MAX(descripcion_documento) as descripcion_documento,
+      codigo_documento
+      FROM documentos_controlados
       LEFT JOIN documentos ON documento_id = documentos.id
       LEFT JOIN organigrama ON documentos_controlados.organigrama_id = organigrama.id
+      GROUP BY documentos.id, codigo_documento
       `
       ;
       const result = await db.query(query);
@@ -127,6 +131,20 @@ const updateDocumentoControlado = async (req, res) => {
   };
 
 
+  const deleteDocumentoControlado = async (req, res) => {
+    const { id } = req.params; // Obtén el ID del documento controlado que deseas eliminar desde los parámetros de la URL
+  
+    try {
+      const query = `DELETE FROM documentos_controlados WHERE id = $1`;
+      await db.query(query, [id]);
+      res.json({ message: 'Documento controlado eliminado con éxito' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Error al eliminar el documento controlado' });
+    }
+  };
+
+
 
   module.exports = {
     createDocumentoControlado,
@@ -134,6 +152,7 @@ const updateDocumentoControlado = async (req, res) => {
     updateDocumentoControlado, // Agrega el controlador de actualización
     getDocumentoControladoById, // Agrega el controlador para obtener por ID
     getControladosPorDocumentoId,
-    getControladosReportesPorDocumentoId 
+    getControladosReportesPorDocumentoId,
+    deleteDocumentoControlado 
 
   };
