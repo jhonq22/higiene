@@ -29,7 +29,7 @@ router.get('/controlados', antecedentesController.getAllAntecedentesControlados)
 
 router.get('/controlados/:id', antecedentesController.getAntecedentesControladosById);
 
-router.get('/controlados/documento/:id', antecedentesController.getAntecedentesControladosReportesById);
+router.get('/controlados/documento', antecedentesController.getAntecedentesControladosReportesById);
 
 // Crear un nuevo registro de Normas
 router.post('/controlados', antecedentesController.createAntecedentesControlados);

@@ -62,18 +62,31 @@ exports.getDocumentosOrganigrama = async (req, res) => {
 // Crear un nuevo registro
 exports.createOrganigrama = async (req, res) => {
   const { codigo, descripcion, padre, estado } = req.body;
-  const sql = 'INSERT INTO organigrama (codigo, descripcion, padre, estado) VALUES ($1, $2, $3, $4)';
+  const sqlCheck = 'SELECT * FROM organigrama WHERE codigo = $1 OR descripcion = $2';
 
   try {
-    const { rowCount } = await db.query(sql, [codigo, descripcion, padre, estado]);
-    if (rowCount === 1) {
-      res.json({ message: 'Registro de organigrama creado con éxito.' });
+    const { rowCount, rows } = await db.query(sqlCheck, [codigo, descripcion]);
+
+    if (rowCount > 0) {
+      // Registro duplicado encontrado, devuelve un código 409 (Conflict)
+      res.status(409).json({ message: 'Registro duplicado: Ya existe un registro similar en la base de datos.' });
     } else {
-      res.status(500).json({ message: 'Error al crear un nuevo registro de organigrama.' });
+      // No existe un registro similar, procede con la inserción
+      const sqlInsert = 'INSERT INTO organigrama (codigo, descripcion, padre, estado) VALUES ($1, $2, $3, $4)';
+      const { rowCount } = await db.query(sqlInsert, [codigo, descripcion, padre, estado]);
+
+      if (rowCount === 1) {
+        // Registro creado con éxito, devuelve un código 201 (Created)
+        res.status(201).json({ message: 'Registro de organigrama creado con éxito.' });
+      } else {
+        // Error en la inserción, devuelve un código 500 (Internal Server Error)
+        res.status(501).json({ message: 'Error al crear un nuevo registro de organigrama.' });
+      }
     }
   } catch (error) {
+    // Error de servidor, devuelve un código 500 (Internal Server Error)
     console.error(error);
-    res.status(500).json({ message: 'Error al crear un nuevo registro de organigrama.' });
+    res.status(500).json({ message: 'Error Parametros invalidos. Revisar el Formulario' });
   }
 };
 

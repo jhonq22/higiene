@@ -2,9 +2,9 @@ const db = require('../database/db');
 
 // Obtener todos los registros de antecendetes 
 exports.getAllAntecedentesMaestra = (req, res) => {
-  db.query(`SELECT antecedentes_maestra.id, antecedentes_maestra.codigo, asociado_revision, fecha_vigencia_ant, fecha_revision_ant, descripcion
+  db.query(`SELECT antecedentes_maestra.id, antecedentes_maestra.codigo, asociado_revision, fecha_vigencia_ant, fecha_revision_ant
    FROM public.antecedentes_maestra
-        LEFT JOIN organigrama ON organigrama_id = organigrama.id
+    
         `, (err, results) => {
     if (err) {
       console.error(err);
@@ -16,9 +16,9 @@ exports.getAllAntecedentesMaestra = (req, res) => {
 
 // Crear un nuevo registro de antecendetes 
 exports.createAntecedentesMaestra = (req, res) => {
-  const { codigo, asociado_revision,fecha_vigencia_ant,fecha_revision_ant, organigrama_id } = req.body;
-  const sql = 'INSERT INTO public.antecedentes_maestra  (codigo, asociado_revision, fecha_vigencia_ant, fecha_revision_ant, organigrama_id   ) VALUES ($1, $2, $3, $4, $5)';
-  db.query(sql, [codigo, asociado_revision,fecha_vigencia_ant,fecha_revision_ant, organigrama_id], (err, result) => {
+  const { codigo, asociado_revision,fecha_vigencia_ant,fecha_revision_ant } = req.body;
+  const sql = 'INSERT INTO public.antecedentes_maestra  (codigo, asociado_revision, fecha_vigencia_ant, fecha_revision_ant   ) VALUES ($1, $2, $3, $4)';
+  db.query(sql, [codigo, asociado_revision,fecha_vigencia_ant,fecha_revision_ant], (err, result) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ message: 'Error al crear un nuevo registro de antecendetes .' });
@@ -30,9 +30,9 @@ exports.createAntecedentesMaestra = (req, res) => {
 // Actualizar un registro de antecendetes  existente
 exports.updateAntecedentesMaestra = (req, res) => {
   const { id } = req.params;
-  const { codigo, asociado_revision,fecha_vigencia_ant,fecha_revision_ant, organigrama_id } = req.body;
-  const sql = 'UPDATE public.antecedentes_maestra  SET codigo =$1, asociado_revision=$2, fecha_vigencia_ant =$3, fecha_revision_ant =$4, organigrama_id =$5 WHERE id=$6';
-  db.query(sql, [codigo, asociado_revision,fecha_vigencia_ant,fecha_revision_ant, organigrama_id, id], (err, result) => {
+  const { codigo, asociado_revision,fecha_vigencia_ant,fecha_revision_ant } = req.body;
+  const sql = 'UPDATE public.antecedentes_maestra  SET codigo =$1, asociado_revision=$2, fecha_vigencia_ant =$3, fecha_revision_ant =$4  WHERE id=$5';
+  db.query(sql, [codigo, asociado_revision,fecha_vigencia_ant,fecha_revision_ant, id], (err, result) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ message: 'Error al actualizar el registro de antecendetes .' });
@@ -62,7 +62,7 @@ exports.getAntecedentesMaestraById = async (req, res) => {
 
 exports.getAntecedentesMaestraReportesById = async (req, res) => {
   const { id } = req.params;
-  const sql = 'SELECT * FROM public.antecedentes_maestra WHERE organigrama_id = $1';
+  const sql = 'SELECT * FROM public.antecedentes_maestra';
 
   try {
     const { rows } = await db.query(sql, [id]);
@@ -89,9 +89,9 @@ exports.getAntecedentesMaestraReportesById = async (req, res) => {
 
 // Obtener todos los registros de antecendetes 
 exports.getAllAntecedentesControlados= (req, res) => {
-    db.query(`SELECT  antecedentes_controlados.id, antecedentes_controlados.nro_registro, asociado, fecha_vigencia_ant,fecha_revision_ant, codigo_documento
+    db.query(`SELECT  antecedentes_controlados.id, antecedentes_controlados.nro_registro, asociado, fecha_vigencia_ant,fecha_revision_ant
     FROM public.antecedentes_controlados
-    LEFT JOIN documentos ON documento_id = documentos.id
+ 
     
     `, (err, results) => {
       if (err) {
@@ -104,9 +104,9 @@ exports.getAllAntecedentesControlados= (req, res) => {
   
   // Crear un nuevo registro de antecendetes 
   exports.createAntecedentesControlados= (req, res) => {
-    const { nro_registro , asociado ,fecha_vigencia_ant,fecha_revision_ant, documento_id } = req.body;
-    const sql = 'INSERT INTO public.antecedentes_controlados   (nro_registro , asociado , fecha_vigencia_ant, fecha_revision_ant, documento_id   ) VALUES ($1, $2, $3, $4, $5)';
-    db.query(sql, [nro_registro , asociado ,fecha_vigencia_ant,fecha_revision_ant, documento_id], (err, result) => {
+    const { nro_registro , asociado ,fecha_vigencia_ant,fecha_revision_ant } = req.body;
+    const sql = 'INSERT INTO public.antecedentes_controlados   (nro_registro , asociado , fecha_vigencia_ant, fecha_revision_ant   ) VALUES ($1, $2, $3, $4)';
+    db.query(sql, [nro_registro , asociado ,fecha_vigencia_ant,fecha_revision_ant], (err, result) => {
       if (err) {
         console.error(err);
         return res.status(500).json({ message: 'Error al crear un nuevo registro de antecendetes .' });
@@ -118,9 +118,9 @@ exports.getAllAntecedentesControlados= (req, res) => {
   // Actualizar un registro de antecendetes  existente
   exports.updateAntecedentesControlados= (req, res) => {
     const { id } = req.params;
-    const { nro_registro , asociado ,fecha_vigencia_ant,fecha_revision_ant, documento_id } = req.body;
-    const sql = 'UPDATE public.antecedentes_controlados   SET nro_registro  =$1, asociado =$2, fecha_vigencia_ant =$3, fecha_revision_ant =$4, documento_id =$5 WHERE id=$6';
-    db.query(sql, [nro_registro , asociado ,fecha_vigencia_ant,fecha_revision_ant, documento_id, id], (err, result) => {
+    const { nro_registro , asociado ,fecha_vigencia_ant,fecha_revision_ant } = req.body;
+    const sql = 'UPDATE public.antecedentes_controlados   SET nro_registro  =$1, asociado =$2, fecha_vigencia_ant =$3, fecha_revision_ant =$4  WHERE id=$5';
+    db.query(sql, [nro_registro , asociado ,fecha_vigencia_ant,fecha_revision_ant, id], (err, result) => {
       if (err) {
         console.error(err);
         return res.status(500).json({ message: 'Error al actualizar el registro de antecendetes .' });
@@ -152,10 +152,10 @@ exports.getAllAntecedentesControlados= (req, res) => {
 
   exports.getAntecedentesControladosReportesById = async (req, res) => {
     const { id } = req.params;
-    const sql = 'SELECT * FROM public.antecedentes_controlados WHERE documento_id = $1';
+    const sql = 'SELECT * FROM public.antecedentes_controlados';
   
     try {
-      const { rows } = await db.query(sql, [id]);
+      const { rows } = await db.query(sql);
       if (rows.length === 0) {
         res.status(404).json({ message: 'antecendetes  no encontrado.' });
       } else {
