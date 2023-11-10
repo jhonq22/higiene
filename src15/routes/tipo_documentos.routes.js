@@ -6,6 +6,8 @@ const router = Router();
 // Obtener todos los tipos de documento
 router.get('/', tipoDocumentosController.getAllTipoDocumentos);
 
+router.get('/activos', tipoDocumentosController.getAllTipoDocumentosActivos);
+
 // Crear un nuevo tipo de documento
 router.post('/', tipoDocumentosController.createTipoDocumento);
 

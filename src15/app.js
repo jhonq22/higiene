@@ -22,6 +22,7 @@ import EmisoresRoutes  from "./routes/emisor.route";
 import NormasRoutes  from "./routes/normas.route";
 import AntecedentesRoutes  from "./routes/antecedentes.route";
 import DocumentosControladosRoutes  from "./routes/documentos_controlados.route";
+import FormatosRoutes  from "./routes/formatos.route";
 
 const app = express();
 
@@ -71,6 +72,7 @@ app.use("/api/emisores", EmisoresRoutes);
 app.use("/api/normas", NormasRoutes);
 app.use("/api/controlados", DocumentosControladosRoutes);
 app.use("/api/antecedentes", AntecedentesRoutes);
+app.use("/api/formatos", FormatosRoutes);
 
 
 

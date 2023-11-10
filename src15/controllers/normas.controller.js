@@ -11,6 +11,16 @@ exports.getAllNormas = (req, res) => {
   });
 };
 
+exports.getAllNormasActivos = (req, res) => {
+  db.query('SELECT * FROM public.normas WHERE estado = true', (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: 'Error al obtener los registros de normas.' });
+    }
+    res.json(results.rows);
+  });
+};
+
 // Crear un nuevo registro de normas
 exports.createNormas = (req, res) => {
   const { nombre_normas, estado } = req.body;

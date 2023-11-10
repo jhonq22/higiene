@@ -11,6 +11,17 @@ exports.getAllTipoDocumentos = async (req, res) => {
   }
 };
 
+// Obtener todos los tipos de documento
+exports.getAllTipoDocumentosActivos = async (req, res) => {
+  try {
+    const { rows } = await db.query('SELECT * FROM tipo_documentos WHERE estado = 1');
+    res.json(rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al obtener los tipos de documento.' });
+  }
+};
+
 // Crear un nuevo tipo de documento
 exports.createTipoDocumento = async (req, res) => {
   const { tipo_documento,siglas_codigo, estado  } = req.body;

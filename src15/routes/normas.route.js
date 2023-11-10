@@ -9,6 +9,7 @@ const router = Router();
 
 // Obtener todos los registros de estatus
 router.get('/', normasController.getAllNormas);
+router.get('/activos', normasController.getAllNormasActivos);
 
 router.get('/:id', normasController.getNormasById);
 
