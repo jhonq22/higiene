@@ -48,17 +48,17 @@ const subirArchivo = async (req, res) => {
       const nombreDocumento = archivo.originalname.replace(/ /g, '_');
 
       // Extrae los valores de los campos del formulario
-      const {  nombre_documento, descripcion_documento, user_id } = req.body;
+      const {  nombre_documento, descripcion_documento, user_id, tipo_formato_id } = req.body;
 
       // Valida que los campos tengan valores definidos o establece null si son undefined
-      const rutaDocumento = path.join('uploads/formatos', nombreDocumento); // Ruta del archivo guardado en el sistema de archivos
+      const rutaDocumento = path.join('uploads/formatos/', nombreDocumento); // Ruta del archivo guardado en el sistema de archivos
       const fecha_registro = new Date(); // Fecha de registro automática
 
       // Prepara la consulta SQL con parámetros
       const insertQuery = `
         INSERT INTO formatos
-        (nombre_documento, descripcion_documento, ruta_documento, fecha_registro)
-        VALUES ($1, $2, $3, $4)
+        (nombre_documento, descripcion_documento, tipo_formato_id, ruta_documento, fecha_registro )
+        VALUES ($1, $2, $3, $4, $5)
       `;
 
 
@@ -68,8 +68,10 @@ const subirArchivo = async (req, res) => {
        
           nombreDocumento || null,
           descripcion_documento || null,
+          tipo_formato_id || 1,
           rutaDocumento || null,
           fecha_registro,
+          
         ]);
 
         res.status(200).json({ mensaje: 'Archivo subido y registrado correctamente', documento: result.rows[0] });
@@ -89,8 +91,10 @@ const listarDocumentos = async (req, res) => {
   try {
     // Consulta SQL para obtener la lista de documentos
     const consulta = `
-      SELECT id, descripcion_documento, fecha_registro, nombre_documento 
-      FROM formatos`;
+      SELECT formatos.id, descripcion_documento, fecha_registro, nombre_documento, tipo_formato 
+      FROM formatos
+      LEFT JOIN tipo_formatos ON tipo_formato_id = tipo_formatos.id
+      `
 
     // Ejecuta la consulta SQL
     const resultados = await db.query(consulta);
